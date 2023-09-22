@@ -1,0 +1,85 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "User API",
+        "description": "API for User",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000"
+        }
+    ],
+    "paths": {
+        "/api/users": {
+            "post": {
+                "description": "Register new user",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "examples": {
+                                "arya": {
+                                    "description": "Register user arya",
+                                    "value": {
+                                        "username": "arya",
+                                        "password": "rahasia",
+                                        "name": "Arya Stark"
+                                    }
+                                }
+                            },
+                            "schema": {
+                                "type": "object",
+                                "required": ["username", "name", "password"],
+                                "properties": {
+                                    "username": {
+                                        "type": "string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Success Register User",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {},
+                                        "errors": {}
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/users/login": {
+            "post": {
+                "description": "Login user"
+            }
+        },
+        "/api/users/current": {
+            "get": {
+                "description": "Get current user"
+            },
+            "patch": {
+                "description": "Update current user"
+            }
+        },
+        "/api/users/logout": {
+            "delete": {
+                "description": "Logout current user"
+            }
+        }
+    }
+}
