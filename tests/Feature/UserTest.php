@@ -147,4 +147,87 @@ class UserTest extends TestCase
             ]
         ]);
     }
+
+    public function testUpdatePasswordSuccess()
+    {
+        $this->seed([UserSeeder::class]);
+        $oldUser = User::where('username', 'test')->first();
+        $this->patch('/api/users/current',[
+            'password' => 'baru',
+        ], [
+            'Authorization' => 'test'
+        ])->assertStatus(200)->assertJson([
+            'data' => [
+                'username' => 'test',
+                'name' => 'test',
+            ]
+        ]);
+        $newUser = User::where('username', 'test')->first();
+        self::assertNotEquals($oldUser->password, $newUser->password);
+    }
+    public function testUpdateNameSuccess()
+    {
+        $this->seed([UserSeeder::class]);
+        $oldUser = User::where('username', 'test')->first();
+        $this->patch('/api/users/current',[
+            'name' => 'arya',
+        ], [
+            'Authorization' => 'test'
+        ])->assertStatus(200)->assertJson([
+            'data' => [
+                'username' => 'test',
+                'name' => 'arya',
+            ]
+        ]);
+        $newUser = User::where('username', 'test')->first();
+        self::assertNotEquals($oldUser->name, $newUser->name);
+    }
+    public function testUpdateFailedSuccess()
+    {
+        $this->seed([UserSeeder::class]);
+        $this->patch('/api/users/current',[
+            'name' => 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia,
+            molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum
+            numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium
+            optio, eaque rerum! Provident similique accusantium nemo autem. Veritatis
+            obcaecati tenetur iure eius earum ut molestias architecto voluptate aliquam
+            nihil, eveniet aliquid culpa officia aut! Impedit sit sunt quaerat, odit,
+            tenetur error, harum nesciunt ipsum debitis quas aliquid. Reprehenderit,',
+        ], [
+            'Authorization' => 'test'
+        ])->assertStatus(400)->assertJson([
+            'errors' => [
+                'name' => [
+                    'The name field must not be greater than 100 characters.'
+                ],
+            ]
+        ]);
+    }
+
+    public function testLogoutSuccess()
+    {
+        $this->seed([UserSeeder::class]);
+        $this->delete(uri:'/api/users/logout', headers:[
+            'Authorization' => 'test'
+        ])->assertStatus(200)->assertJson([
+            "data" => true
+        ]);
+
+        $user = User::where('username', 'test')->first();
+        self::assertNull($user->token);
+    }
+
+    public function testLogoutFailed()
+    {
+        $this->seed([UserSeeder::class]);
+        $this->delete('/api/users/logout', [
+            'Authorization' => 'salah'
+        ])->assertStatus(401)->assertJson([
+            "errors" => [
+                "message" => [
+                    "Unauthorized"
+                ]
+            ]
+        ]);
+    }
 }
